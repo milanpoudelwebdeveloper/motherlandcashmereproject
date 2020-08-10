@@ -12,5 +12,6 @@ func main() {
 }
 
 func handlerFunc(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/plain")
 	fmt.Fprint(w, "<h1>Welcome to our copy site</h1>")
 }
