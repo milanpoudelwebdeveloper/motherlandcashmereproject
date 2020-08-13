@@ -38,7 +38,7 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", home)
 	r.HandleFunc("/contact", contact)
-	http.ListenAndServe(":8060", r)
+	http.ListenAndServe(":8054", r)
 
 }
 
