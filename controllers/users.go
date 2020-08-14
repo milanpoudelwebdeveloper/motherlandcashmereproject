@@ -37,5 +37,15 @@ func (u *Users) New(w http.ResponseWriter, r *http.Request) {
 //Create is used to create new user account
 //Create is used to process the signup form where users submits it
 func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		panic(err)
+	}
+
+	fmt.Fprintln(w, r.PostForm["email"])
+	fmt.Fprintln(w, r.PostForm["password"])
 	fmt.Fprintln(w, "This is a temporary response")
+
+	//returns the first value from the given "email" and "password"
+	// fmt.Fprintln(w, r.PostFormValue("email"))
+	// fmt.Fprintln(w, r.PostFormValue("password"))
 }
