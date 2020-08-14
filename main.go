@@ -36,9 +36,11 @@ func main() {
 	contactView = views.NewView("bootstrap", "views/contact.gohtml")
 	usersC := controllers.NewUsers()
 	r := mux.NewRouter()
-	r.HandleFunc("/", home)
-	r.HandleFunc("/contact", contact)
-	r.HandleFunc("/signup", usersC.New)
+	r.HandleFunc("/", home).Methods("GET")
+	r.HandleFunc("/contact", contact).Methods("GET")
+	r.HandleFunc("/signup", usersC.New).Methods("GET")
+	r.HandleFunc("/signup", usersC.Create).Methods("POST")
+
 	http.ListenAndServe(":8054", r)
 
 }
