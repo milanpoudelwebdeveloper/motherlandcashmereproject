@@ -7,6 +7,8 @@ import (
 )
 
 var (
+	//TemplateDir is
+	TemplateDir string = "views/"
 	//LayoutDir is
 	LayoutDir string = "views/layouts/"
 	//TemplateExt is
@@ -15,6 +17,8 @@ var (
 
 //NewView is
 func NewView(layout string, files ...string) *View {
+	addTemplatePath(files)
+	addTemplateExt(files)
 	filesofLayout := layoutFiles()
 
 	files = append(files,
@@ -59,4 +63,31 @@ func layoutFiles() []string {
 	}
 	return files
 
+}
+
+//addTemplatePath takes in a slice of strings
+//representing the file paths for templates and it prepends
+//the TemplateDir directory to each string in the slice
+
+//Eg.the input {"home"} would result in the output
+//{"views/home"}if templateDir=="views/"
+
+func addTemplatePath(files []string) {
+	for i, f := range files {
+		files[i] = TemplateDir + f
+	}
+
+}
+
+//addTemplateExt takes in a slice of strings
+//representing the file paths for the templates and it appends
+//the TemplateExt extenstion to each string in the slice
+
+//Eg. the input {"home"} would result in the output
+//{home.gohtml } if templateExt==".gohtml"
+//
+func addTemplateExt(files []string) {
+	for i, f := range files {
+		files[i] = f + TemplateExt
+	}
 }
