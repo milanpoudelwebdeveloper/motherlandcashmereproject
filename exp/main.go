@@ -3,26 +3,26 @@ package main
 import (
 	"fmt"
 
-	"github.com/jinzhu/gorm"
+	"../models"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
-//User is
-type User struct {
-	gorm.Model
-	Namee  string
-	Email  string `gorm:"not null;unique_index"`
-	Color  string
-	Orders []Order
-}
+// //User is
+// type User struct {
+// 	gorm.Model
+// 	Namee  string
+// 	Email  string `gorm:"not null;unique_index"`
+// 	Color  string
+// 	Orders []Order
+// }
 
-//Order is
-type Order struct {
-	gorm.Model
-	UserID      uint
-	Amount      int
-	Description string
-}
+// //Order is
+// type Order struct {
+// 	gorm.Model
+// 	UserID      uint
+// 	Amount      int
+// 	Description string
+// }
 
 const (
 	host     = "localhost"
@@ -34,52 +34,65 @@ const (
 
 func main() {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-	db, err := gorm.Open("postgres", psqlInfo)
+	us, err := models.NewUserService(psqlInfo)
 	if err != nil {
 		panic(err)
 	}
-	defer db.Close()
-	db.LogMode(true)
-	db.AutoMigrate(&User{}, &Order{})
-
-	// var u User = User{
-	// 	Color: "Purple",
-	// 	Email: "kshitiz@yahoo.com",
-	// }
-
-	var u User
-	if err := db.First(&u).Error; err != nil {
-		panic(err)
-	}
-	fmt.Printf("the user is :%+v\n", u)
-	fmt.Println(u)
-	fmt.Println(u.Orders)
-	// createOrder(db, u, 1001, "Fake description1")
-	// createOrder(db, u, 9999, "Fake description2")
-	// createOrder(db, u, 100, "Fake description3")
-
-	//Error handling with GORM
-	db = db.Where("email=?", "ngngn@yahoo.com").First(&u)
-	if err := db.Where("email=?", "ngngn@yahoo.com").First(&u).Error; err != nil {
-		switch err {
-		case gorm.ErrRecordNotFound:
-			fmt.Println("user not found")
-		default:
-			panic(err)
-		}
-	}
-}
-
-func createOrder(db *gorm.DB, user User, amount int, desc string) {
-	err := db.Create(&Order{
-		UserID:      user.ID,
-		Amount:      amount,
-		Description: desc,
-	}).Error
+	defer us.Close()
+	//us.DestructiveReset()
+	user, err := us.ByID(2)
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println(*user)
 }
+
+// db, err := gorm.Open("postgres", psqlInfo)
+// if err != nil {
+// 	panic(err)
+// }
+// defer db.Close()
+// db.LogMode(true)
+// db.AutoMigrate(&User{}, &Order{})
+
+// var u User = User{
+// 	Color: "Purple",
+// 	Email: "kshitiz@yahoo.com",
+// }
+
+// var u User
+// if err := db.First(&u).Error; err != nil {
+// 	// 	panic(err)
+// 	// }
+// 	// fmt.Printf("the user is :%+v\n", u)
+// 	// fmt.Println(u)
+// 	// fmt.Println(u.Orders)
+// 	// createOrder(db, u, 1001, "Fake description1")
+// 	// createOrder(db, u, 9999, "Fake description2")
+// 	// createOrder(db, u, 100, "Fake description3")
+
+// 	//Error handling with GORM
+// 	db = db.Where("email=?", "ngngn@yahoo.com").First(&u)
+// 	if err := db.Where("email=?", "ngngn@yahoo.com").First(&u).Error; err != nil {
+// 		switch err {
+// 		case gorm.ErrRecordNotFound:
+// 			fmt.Println("user not found")
+// // 		default:
+// // 			panic(err)
+// // 		}
+// // 	}
+// // }
+
+// func createOrder(db *gorm.DB, user User, amount int, desc string) {
+// 	err := db.Create(&Order{
+// 		UserID:      user.ID,
+// 		Amount:      amount,
+// 		Description: desc,
+// 	}).Error
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// }
 
 // if db.RecordNotFound() {
 // 	fmt.Println("user not found!")
