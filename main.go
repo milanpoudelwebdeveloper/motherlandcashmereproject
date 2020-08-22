@@ -21,7 +21,5 @@ func main() {
 	r.Handle("/contact", staticC.Contact).Methods("GET")
 	r.HandleFunc("/signup", usersC.New).Methods("GET")
 	r.HandleFunc("/signup", usersC.Create).Methods("POST")
-
 	http.ListenAndServe(":8054", r)
-
 }
