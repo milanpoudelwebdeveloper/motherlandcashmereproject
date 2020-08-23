@@ -39,12 +39,29 @@ func main() {
 		panic(err)
 	}
 	defer us.Close()
-	//us.DestructiveReset()
-	user, err := us.ByID(2)
+	us.DestructiveReset()
+	user := models.User{
+		Name:  "Milan Poudel",
+		Email: "milan@gmail.com",
+	}
+	if err := us.Create(&user); err != nil {
+		panic(err)
+	}
+
+	if err := us.Delete(user.ID); err != nil {
+		panic(err)
+	}
+
+	// user.Email = "milanacademia@yahoo.com"
+	// if err := us.Update(&user); err != nil {
+	// 	panic(err)
+	// }
+
+	userByID, err := us.ByID(user.ID)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(*user)
+	fmt.Println(userByID)
 }
 
 // db, err := gorm.Open("postgres", psqlInfo)
