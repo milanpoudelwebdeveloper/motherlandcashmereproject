@@ -15,7 +15,7 @@ import (
 
 var (
 	//ErrNotFound is returned when resouce can't be found in database
-	ErrNotFound = errors.New("models: resource not found")
+	ErrNotFound = errors.New("models: resourcess not found")
 
 	//ErrInvalidID is returned when an invalid ID is provided
 	//to a method like Delete.
