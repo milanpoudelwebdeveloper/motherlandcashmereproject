@@ -4,6 +4,10 @@ import (
 	"errors"
 
 	"github.com/jinzhu/gorm"
+
+	"../hash"
+	"../rand"
+
 	//This is
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"golang.org/x/crypto/bcrypt"
@@ -25,6 +29,7 @@ var (
 )
 
 const userPwPepper = "secret-random-string"
+const hmacSecretKey = "secret-hmac-key"
 
 //NewUserService is
 func NewUserService(connectionInfo string) (*UserService, error) {
@@ -32,15 +37,19 @@ func NewUserService(connectionInfo string) (*UserService, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	db.LogMode(true)
+	hmac := hash.NewHMAC(hmacSecretKey)
 	return &UserService{
-		db: db,
+		db:   db,
+		hmac: hmac,
 	}, nil
 }
 
 //UserService is
 type UserService struct {
-	db *gorm.DB
+	db   *gorm.DB
+	hmac hash.HMAC
 }
 
 //ByID will look up by the id provided
@@ -61,6 +70,18 @@ func (us *UserService) ByEmail(email string) (*User, error) {
 	db := us.db.Where("email=?", email)
 	err := first(db, &user)
 	return &user, err
+
+}
+
+//ByRemember looks up a user with the given remember token and returns that user.This method will handle hashing the token for us.Errors are the same as ByEmail and BYID
+func (us *UserService) ByRemember(token string) (*User, error) {
+	var user User
+	rememberHash := us.hmac.HASH(token)
+	err := first(us.db.Where("remember_hash=?", rememberHash), &user)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 
 }
 
@@ -110,6 +131,15 @@ func (us *UserService) Create(user *User) error {
 	}
 	user.PasswordHash = string(hashedBytes)
 	user.Password = ""
+	if user.Remember == "" {
+		token, err := rand.RememberToken()
+		if err != nil {
+			return err
+		}
+		user.Remember = token
+	}
+	user.RememberHash = us.hmac.HASH(user.Remember)
+
 	return us.db.Create(user).Error
 
 }
@@ -117,6 +147,9 @@ func (us *UserService) Create(user *User) error {
 //Update will update the provided user with all of the data
 //in the provided user object
 func (us *UserService) Update(user *User) error {
+	if user.Remember != "" {
+		user.RememberHash = us.hmac.HASH(user.Remember)
+	}
 	return us.db.Save(user).Error
 
 }
@@ -162,4 +195,6 @@ type User struct {
 	Email        string `gorm:"not null;unique_index"`
 	Password     string `gorm:"-"`
 	PasswordHash string `gorm:"not null"`
+	Remember     string `gorm:"-"`
+	RememberHash string `gorm:"not null;unique_index"`
 }
