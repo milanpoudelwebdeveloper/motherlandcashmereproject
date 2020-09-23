@@ -6,8 +6,8 @@ import (
 	"github.com/jinzhu/gorm"
 
 	"../hash"
-	"../rand"
 
+	"../rand"
 	//This is
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"golang.org/x/crypto/bcrypt"
@@ -148,14 +148,7 @@ func (uv *userValidator) ByRemember(token string) (*User, error) {
 //Create will create the provided user and backfill data
 //like the id,created at,updated at,deleted at
 func (uv *userValidator) Create(user *User) error {
-	if user.Remember == "" {
-		token, err := rand.RememberToken()
-		if err != nil {
-			return err
-		}
-		user.Remember = token
-	}
-	err := runUserValFuncs(user, uv.bcryptPassword, uv.hmacRemember)
+	err := runUserValFuncs(user, uv.bcryptPassword, uv.setRememberIfUnset, uv.hmacRemember)
 	if err != nil {
 		return err
 	}
@@ -200,6 +193,20 @@ func (uv *userValidator) hmacRemember(user *User) error {
 		return nil
 	}
 	user.RememberHash = uv.hmac.HASH(user.Remember)
+	return nil
+
+}
+
+func (uv *userValidator) setRememberIfUnset(user *User) error {
+	if user.Remember != "" {
+		return nil
+	}
+
+	token, err := rand.RememberToken()
+	if err != nil {
+		return err
+	}
+	user.Remember = token
 	return nil
 
 }
