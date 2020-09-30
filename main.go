@@ -39,5 +39,5 @@ func main() {
 	r.Handle("/login", usersC.LoginView).Methods("GET")
 	r.HandleFunc("/login", usersC.Login).Methods("POST")
 	r.HandleFunc("/cookietest", usersC.CookieTest).Methods("GET")
-	http.ListenAndServe(":8070", r)
+	http.ListenAndServe(":8080", r)
 }
