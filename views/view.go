@@ -49,6 +49,14 @@ func (v *View) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 //Render is
 func (v *View) Render(w http.ResponseWriter, data interface{}) error {
 	w.Header().Set("Content-Type", "text/html")
+	switch data.(type) {
+	case Data:
+		//do nothing
+	default:
+		data = Data{
+			Yield: data,
+		}
+	}
 	err := v.Template.ExecuteTemplate(w, v.Layout, data)
 	return err
 
