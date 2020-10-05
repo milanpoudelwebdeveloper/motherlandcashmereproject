@@ -48,7 +48,7 @@ func (v *View) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 //Render is
 func (v *View) Render(w http.ResponseWriter, data interface{}) error {
-	w.Header().Set("Content-Type", "text/html; charset=UTF-8")
+	w.Header().Set("Content-Type", "text/html")
 	err := v.Template.ExecuteTemplate(w, v.Layout, data)
 	return err
 

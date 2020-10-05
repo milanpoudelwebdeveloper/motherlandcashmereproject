@@ -1,5 +1,4 @@
 {{define "bootstrap"}}
-
 <!DOCTYPE html>
 <html lang="en">
  <head>
@@ -7,9 +6,12 @@
  <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
  </head>
  <body>
-  {{template "navbar"}}
+
+{{template "navbar"}}
  <div class="container-fluid">
+ {{if .Alert}}
  {{template "alert" .Alert}}
+ {{end}}
  {{template "yield" .Yield}}
  {{template "footer"}}
  </div>
