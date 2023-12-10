@@ -1,1 +1,1 @@
-This is a full stack web gallery app which has a simple front end written with bootstrap and the backend is written in Go.
+This is a full stack web gallery app which has a simple front end written with bootstrap and the backend is written in Go. The frontend is written in HTML using Go templates and the GORM has been used for the database querying.
